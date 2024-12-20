@@ -1,0 +1,30 @@
+﻿@model IEnumerable<WebProjesi.Models.Calisan>
+
+<h1>Çalışan Listesi</h1>
+
+<table class="table table-bordered table-striped style = "width:100">
+    <thead>
+        <tr> 
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Başlangıç Saati</th>
+            <th>Bitiş Saati</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var calisan in Model)
+        {
+            <tr>
+                <td>@calisan.Ad</td>
+                <td>@calisan.Soyad</td>
+                <td>@calisan.BaslangicSaati</td>
+                <td>@calisan.BitisSaati</td>
+                <td>
+                    <a href="/Calisan/Edit/@calisan.CalisanId" class="btn btn-warning">Edit</a>
+                    <a href="/Calisan/Delete/@calisan.CalisanId" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-controller="Calisan"asp-action="Careate" class="btn btn-primary">Add New</a>
