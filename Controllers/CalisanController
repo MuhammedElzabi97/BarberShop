@@ -1,0 +1,114 @@
+using Microsoft.AspNetCore.Mvc;
+using WebProjesi.Data;
+using WebProjesi.Models;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+
+namespace WebProjesi.Controllers
+{
+    public class CalisanController : Controller
+    {
+        private readonly AppDbContext _context;
+
+        public CalisanController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Index()
+        {
+            IEnumerable<Calisan> calisanlar = _context.Calisanlar.ToList();
+            return View(calisanlar);
+        }
+
+        //Get
+        public IActionResult YeniCalisanEkle()
+        {
+            return View();
+        }
+
+        //Post
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult YeniCalisanEkle(Calisan  calisan)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Calisanlar.Add(calisan);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(calisan);
+            }
+        }
+
+        //GET
+        public IActionResult Duzeltir(int ?Id)
+        {
+            if(Id==0 || Id==null )
+            {
+                return NotFound();
+            }
+
+            var calisan = _context.Calisanlar.Find(Id);
+
+            if (calisan == null)
+            {
+                return NotFound();
+            }
+            return View(calisan);
+        }
+
+        // POST
+        [HttpPost]
+        public IActionResult Duzeltir(Calisan calisan)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Update(calisan);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(calisan);
+            }
+        }
+
+        //GET
+        public IActionResult Sil(int ?Id)
+        {
+            if(Id==null || Id==0)
+            {
+                return NotFound();
+            }
+
+            var calisan =_context.Calisanlar.Find(Id);
+
+            if(calisan == null)
+            {
+                return NotFound();
+            }
+            return View(calisan);
+        }
+
+        //Post
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Sil(int Id)
+        {
+            var calisan = _context.Calisanlar.Find(Id);
+
+            if(calisan == null)
+            {
+                return NotFound();
+            }
+
+            _context.Calisanlar.Remove(calisan);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+    }
+}
