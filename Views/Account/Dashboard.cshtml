@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Yönetim Paneli";
+}
+
+<div class="container my-5">
+    <h1 class="mb-4 text-center">Yönetim Paneli</h1>
+
+    <!-- İstatistikler -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h4>@ViewBag.TotalEmployees</h4>
+                    <p>Çalışanlar</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h4>@ViewBag.TotalServices</h4>
+                    <p>Hizmetler</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-warning text-white">
+                <div class="card-body">
+                    <h4>@ViewBag.TotalBookings</h4>
+                    <p>Randevular</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-danger text-white">
+                <div class="card-body">
+                    <h4>@ViewBag.TotalIncome ₺</h4>
+                    <p>Toplam Gelir</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yönetim bağlantıları -->
+    <div class="row">
+        <div class="col-md-4">
+            <a href="/Employee/Index" class="btn btn-outline-primary w-100 py-3">Çalışanları Yönet</a>
+        </div>
+        <div class="col-md-4">
+            <a href="/Service/Index" class="btn btn-outline-success w-100 py-3">Hizmetleri Yönet</a>
+        </div>
+        <div class="col-md-4">
+            <a href="/Booking/Index" class="btn btn-outline-warning w-100 py-3">Randevuları Yönet</a>
+        </div>
+    </div>
+</div>
