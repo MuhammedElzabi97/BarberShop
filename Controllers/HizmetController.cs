@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using WebProjesi.Data;
 using WebProjesi.Models;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebProjesi.Controllers
 {
-    public class HizmetController  Controller
+    public class HizmetController : Controller
     {
 
         private readonly AppDbContext _context;
@@ -15,72 +15,102 @@ namespace WebProjesi.Controllers
             _context = context;
         }
 
-         GET HizmetIndex
-        [HttpGet]
         public IActionResult Index()
         {
-            var hizmetler = _context.Hizmetler.ToList(); 
+            IEnumerable<Hizmet> hizmetler = _context.Hizmetler.ToList();
             return View(hizmetler);
         }
 
-
-         GET HizmetCreate
-        [HttpGet]
-        public IActionResult Create()
+        //Get
+        public IActionResult YeniHizmetEkle()
         {
-            ViewBag.Hizmetler = _context.Hizmetler.ToList();
             return View();
         }
 
-         POST HizmetCreate
+        //Post
         [HttpPost]
-        public IActionResult Create(Hizmet model)
+        [ValidateAntiForgeryToken]
+        public IActionResult YeniHizmetEkle(Hizmet hizmet)
         {
             if (ModelState.IsValid)
             {
-                _context.Hizmetler.Add(model);
+                _context.Hizmetler.Add(hizmet);
                 _context.SaveChanges();
-                return RedirectToAction(Index);
+                return RedirectToAction("Index");
             }
-            return View(model);
+            else
+            {
+                return View(hizmet);
+            }
         }
 
-         GET HizmetEdit{id}
-        [HttpGet]
-        public IActionResult Edit(int id)
+        //GET
+        public IActionResult Duzeltir(int? Id)
         {
-            var service = _context.Hizmetler.FirstOrDefault(s = s.HizmetId == id);
-            if (service == null)
+            if (Id == 0 || Id == null)
             {
                 return NotFound();
             }
-            return View(service);
+
+            var hizmet = _context.Hizmetler.Find(Id);
+
+            if (hizmet == null)
+            {
+                return NotFound();
+            }
+            return View(hizmet);
         }
 
-         POST HizmetEdit{id}
+        // POST
         [HttpPost]
-        public IActionResult Edit(Hizmet model)
+        public IActionResult Duzeltir(Hizmet hizmet)
         {
             if (ModelState.IsValid)
             {
-                _context.Hizmetler.Update(model);
+                _context.Update(hizmet);
                 _context.SaveChanges();
-                return RedirectToAction(Index);
+                return RedirectToAction("Index");
             }
-            return View(model);
+            else
+            {
+                return View(hizmet);
+            }
         }
 
-         GET HizmetDelete{id}
-        [HttpGet]
-        public IActionResult Delete(int id)
+        //GET
+        public IActionResult Sil(int? Id)
         {
-            var service = _context.Hizmetler.FirstOrDefault(s = s.HizmetId == id);
-            if (service != null)
+            if (Id == null || Id == 0)
             {
-                _context.Hizmetler.Remove(Hizmet);
-                _context.SaveChanges();
+                return NotFound();
             }
-            return RedirectToAction(Index);
+
+            var hizmet = _context.Hizmetler.Find(Id);
+
+            if (hizmet == null)
+            {
+                return NotFound();
+            }
+            return View(hizmet);
         }
+
+        //Post
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Sil(int Id)
+        {
+            var hizmet = _context.Hizmetler.Find(Id);
+
+            if (hizmet == null)
+            {
+                return NotFound();
+            }
+
+            _context.Hizmetler.Remove(hizmet);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+
     }
 }
