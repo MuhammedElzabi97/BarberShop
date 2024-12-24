@@ -1,37 +1,59 @@
-﻿using Berber_Salonu.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
+using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Berber_Salonu.Data
+#nullable disable
+
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
+namespace WebProjesi.Migrations
 {
-    public class AppDbContext : DbContext
+    /// <inheritdoc />
+    public partial class new1 : Migration
     {
-        //عن طريق الـ DbSet، بتقدر تضيف، تعدّل، تقرأ، وتحذف بيانات من كل جدول بسهولة.
-        public DbSet<Salon>Salons { get; set; }
-        public DbSet<Service> Services { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Booking> Bookings { get; set; }
-
-
-        // من دون هذا ما راح يعرف كيف يتواصل مع قاعدة البيانات  
-        //بيقول: "خذ الإعدادات اللي جايه من options ومررها للـ DbContext عشان يقدر يشتغل مع قاعدة البيانات."
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
-
-        // بينشئ بينات اولية مشان لا يصير عندي اخطاء بس افتح البرنامج و اعملو تيست
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            migrationBuilder.InsertData(
+                table: "Calisanlar",
+                columns: new[] { "CalisanID", "Ad", "BaslangicSaati", "BitisSaati" },
+                values: new object[,]
+                {
+                    { 1, "Ahmet", new TimeSpan(0, 9, 0, 0, 0), new TimeSpan(0, 18, 0, 0, 0) },
+                    { 2, "Mehmet", new TimeSpan(0, 10, 0, 0, 0), new TimeSpan(0, 19, 0, 0, 0) }
+                });
 
-            modelBuilder.Entity<User>().HasData(new User
-            {
-                UserId = 1,
-                Name = "Admin",
-                Email = "admin@salon.com",
-                Password = "admin123", 
-                Role = "Admin"
-            });
+            migrationBuilder.InsertData(
+                table: "Hizmetler",
+                columns: new[] { "HizmetID", "HizmetAdi", "Sure", "Ucret" },
+                values: new object[,]
+                {
+                    { 1, "Saç Kesimi", 30, 50m },
+                    { 2, "Sakal Tıraşı", 20, 30m }
+                });
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DeleteData(
+                table: "Calisanlar",
+                keyColumn: "CalisanID",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "Calisanlar",
+                keyColumn: "CalisanID",
+                keyValue: 2);
+
+            migrationBuilder.DeleteData(
+                table: "Hizmetler",
+                keyColumn: "HizmetID",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "Hizmetler",
+                keyColumn: "HizmetID",
+                keyValue: 2);
         }
     }
 }
