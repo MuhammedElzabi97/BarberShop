@@ -1,59 +1,42 @@
-using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using WebProjesi.Models;
 
-#nullable disable
-
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
-namespace WebProjesi.Migrations
+namespace WebProjesi.Data
 {
-    /// <inheritdoc />
-    public partial class new1 : Migration
+    public class AppDbContext : IdentityDbContext<Kullanici>
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.InsertData(
-                table: "Calisanlar",
-                columns: new[] { "CalisanID", "Ad", "BaslangicSaati", "BitisSaati" },
-                values: new object[,]
-                {
-                    { 1, "Ahmet", new TimeSpan(0, 9, 0, 0, 0), new TimeSpan(0, 18, 0, 0, 0) },
-                    { 2, "Mehmet", new TimeSpan(0, 10, 0, 0, 0), new TimeSpan(0, 19, 0, 0, 0) }
-                });
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-            migrationBuilder.InsertData(
-                table: "Hizmetler",
-                columns: new[] { "HizmetID", "HizmetAdi", "Sure", "Ucret" },
-                values: new object[,]
-                {
-                    { 1, "Saç Kesimi", 30, 50m },
-                    { 2, "Sakal Tıraşı", 20, 30m }
-                });
+
+        public DbSet<Calisan> Calisanlar { get; set; }
+        public DbSet<Hizmet> Hizmetler { get; set; }
+        public DbSet<Randevu> Randevular{ get; set; }
+        public DbSet<CalisanHizmet> CalisanHizmetler { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // CalisanHizmet varlığını kullanarak Çoktan Çoğa ilişkiyi yapılandırın
+             
+            modelBuilder.Entity<CalisanHizmet>()
+                .HasKey(ch => new { ch.CalisanID, ch.HizmetID }); // Composite Key
+
+            modelBuilder.Entity<CalisanHizmet>()
+                .HasOne(ch => ch.Calisan)
+                .WithMany(c => c.CalisanHizmetler)
+                .HasForeignKey(ch => ch.CalisanID);
+
+            modelBuilder.Entity<CalisanHizmet>()
+                .HasOne(ch => ch.Hizmet)
+                .WithMany(h => h.CalisanHizmetler)
+                .HasForeignKey(ch => ch.HizmetID);
+
+           
         }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DeleteData(
-                table: "Calisanlar",
-                keyColumn: "CalisanID",
-                keyValue: 1);
 
-            migrationBuilder.DeleteData(
-                table: "Calisanlar",
-                keyColumn: "CalisanID",
-                keyValue: 2);
-
-            migrationBuilder.DeleteData(
-                table: "Hizmetler",
-                keyColumn: "HizmetID",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "Hizmetler",
-                keyColumn: "HizmetID",
-                keyValue: 2);
-        }
     }
 }
