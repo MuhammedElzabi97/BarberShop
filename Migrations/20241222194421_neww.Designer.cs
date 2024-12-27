@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebProjesi.Data;
 
@@ -11,9 +12,11 @@ using WebProjesi.Data;
 namespace WebProjesi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241222194421_neww")]
+    partial class neww
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace WebProjesi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("CalisanHizmet", b =>
+                {
+                    b.Property<int>("CalisanID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HizmetID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CalisanID", "HizmetID");
+
+                    b.HasIndex("HizmetID");
+
+                    b.ToTable("CalisanHizmet");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -163,7 +181,7 @@ namespace WebProjesi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CalisanID"));
 
-                    b.Property<string>("Ad_Soyad")
+                    b.Property<string>("Ad")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -174,28 +192,9 @@ namespace WebProjesi.Migrations
                     b.Property<TimeSpan>("BitisSaati")
                         .HasColumnType("time");
 
-                    b.Property<string>("Calisan_Resmi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("CalisanID");
 
                     b.ToTable("Calisanlar");
-                });
-
-            modelBuilder.Entity("WebProjesi.Models.CalisanHizmet", b =>
-                {
-                    b.Property<int>("CalisanID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HizmetID")
-                        .HasColumnType("int");
-
-                    b.HasKey("CalisanID", "HizmetID");
-
-                    b.HasIndex("HizmetID");
-
-                    b.ToTable("CalisanHizmetler");
                 });
 
             modelBuilder.Entity("WebProjesi.Models.Hizmet", b =>
@@ -206,16 +205,10 @@ namespace WebProjesi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HizmetID"));
 
-                    b.Property<string>("Aciklama")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("HizmetAdi")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ImageURL")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Sure")
                         .HasColumnType("int");
@@ -297,47 +290,19 @@ namespace WebProjesi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("WebProjesi.Models.Randevu", b =>
+            modelBuilder.Entity("CalisanHizmet", b =>
                 {
-                    b.Property<int>("RandevuID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("WebProjesi.Models.Calisan", null)
+                        .WithMany()
+                        .HasForeignKey("CalisanID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RandevuID"));
-
-                    b.Property<int>("CalisanID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Durum")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("HizmetID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MusteriAdi")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Notlar")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RandevuTarihi")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Ucret")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("RandevuID");
-
-                    b.HasIndex("CalisanID");
-
-                    b.HasIndex("HizmetID");
-
-                    b.ToTable("Randevular");
+                    b.HasOne("WebProjesi.Models.Hizmet", null)
+                        .WithMany()
+                        .HasForeignKey("HizmetID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -389,54 +354,6 @@ namespace WebProjesi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("WebProjesi.Models.CalisanHizmet", b =>
-                {
-                    b.HasOne("WebProjesi.Models.Calisan", "Calisan")
-                        .WithMany("CalisanHizmetler")
-                        .HasForeignKey("CalisanID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebProjesi.Models.Hizmet", "Hizmet")
-                        .WithMany("CalisanHizmetler")
-                        .HasForeignKey("HizmetID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Calisan");
-
-                    b.Navigation("Hizmet");
-                });
-
-            modelBuilder.Entity("WebProjesi.Models.Randevu", b =>
-                {
-                    b.HasOne("WebProjesi.Models.Calisan", "Calisan")
-                        .WithMany()
-                        .HasForeignKey("CalisanID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebProjesi.Models.Hizmet", "Hizmet")
-                        .WithMany()
-                        .HasForeignKey("HizmetID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Calisan");
-
-                    b.Navigation("Hizmet");
-                });
-
-            modelBuilder.Entity("WebProjesi.Models.Calisan", b =>
-                {
-                    b.Navigation("CalisanHizmetler");
-                });
-
-            modelBuilder.Entity("WebProjesi.Models.Hizmet", b =>
-                {
-                    b.Navigation("CalisanHizmetler");
                 });
 #pragma warning restore 612, 618
         }

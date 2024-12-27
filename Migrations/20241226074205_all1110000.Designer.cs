@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebProjesi.Data;
 
@@ -11,9 +12,11 @@ using WebProjesi.Data;
 namespace WebProjesi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241226074205_all1110000")]
+    partial class all1110000
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,6 +212,9 @@ namespace WebProjesi.Migrations
                     b.Property<string>("Aciklama")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("AktifMi")
+                        .HasColumnType("bit");
+
                     b.Property<string>("HizmetAdi")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -216,6 +222,9 @@ namespace WebProjesi.Migrations
 
                     b.Property<string>("ImageURL")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("KategoriID")
+                        .HasColumnType("int");
 
                     b.Property<int>("Sure")
                         .HasColumnType("int");
@@ -225,7 +234,27 @@ namespace WebProjesi.Migrations
 
                     b.HasKey("HizmetID");
 
+                    b.HasIndex("KategoriID");
+
                     b.ToTable("Hizmetler");
+                });
+
+            modelBuilder.Entity("WebProjesi.Models.Kategori", b =>
+                {
+                    b.Property<int>("KategoriID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KategoriID"));
+
+                    b.Property<string>("KategoriAdi")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("KategoriID");
+
+                    b.ToTable("Kategori");
                 });
 
             modelBuilder.Entity("WebProjesi.Models.Kullanici", b =>
@@ -410,6 +439,17 @@ namespace WebProjesi.Migrations
                     b.Navigation("Hizmet");
                 });
 
+            modelBuilder.Entity("WebProjesi.Models.Hizmet", b =>
+                {
+                    b.HasOne("WebProjesi.Models.Kategori", "Kategori")
+                        .WithMany("Hizmetler")
+                        .HasForeignKey("KategoriID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Kategori");
+                });
+
             modelBuilder.Entity("WebProjesi.Models.Randevu", b =>
                 {
                     b.HasOne("WebProjesi.Models.Calisan", "Calisan")
@@ -437,6 +477,11 @@ namespace WebProjesi.Migrations
             modelBuilder.Entity("WebProjesi.Models.Hizmet", b =>
                 {
                     b.Navigation("CalisanHizmetler");
+                });
+
+            modelBuilder.Entity("WebProjesi.Models.Kategori", b =>
+                {
+                    b.Navigation("Hizmetler");
                 });
 #pragma warning restore 612, 618
         }

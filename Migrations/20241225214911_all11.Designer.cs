@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebProjesi.Data;
 
@@ -11,9 +12,11 @@ using WebProjesi.Data;
 namespace WebProjesi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241225214911_all11")]
+    partial class all11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,6 +158,49 @@ namespace WebProjesi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Randevu", b =>
+                {
+                    b.Property<int>("RandevuID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RandevuID"));
+
+                    b.Property<int>("CalisanID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Durum")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("HizmetID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MusteriAdi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Notlar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RandevuTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Ucret")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("RandevuID");
+
+                    b.HasIndex("CalisanID");
+
+                    b.HasIndex("HizmetID");
+
+                    b.ToTable("Randevular");
+                });
+
             modelBuilder.Entity("WebProjesi.Models.Calisan", b =>
                 {
                     b.Property<int>("CalisanID")
@@ -209,13 +255,20 @@ namespace WebProjesi.Migrations
                     b.Property<string>("Aciklama")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("AktifMi")
+                        .HasColumnType("bit");
+
                     b.Property<string>("HizmetAdi")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ImageURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("KategoriID")
+                        .HasColumnType("int");
 
                     b.Property<int>("Sure")
                         .HasColumnType("int");
@@ -225,7 +278,27 @@ namespace WebProjesi.Migrations
 
                     b.HasKey("HizmetID");
 
+                    b.HasIndex("KategoriID");
+
                     b.ToTable("Hizmetler");
+                });
+
+            modelBuilder.Entity("WebProjesi.Models.Kategori", b =>
+                {
+                    b.Property<int>("KategoriID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KategoriID"));
+
+                    b.Property<string>("KategoriAdi")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("KategoriID");
+
+                    b.ToTable("Kategori");
                 });
 
             modelBuilder.Entity("WebProjesi.Models.Kullanici", b =>
@@ -297,49 +370,6 @@ namespace WebProjesi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("WebProjesi.Models.Randevu", b =>
-                {
-                    b.Property<int>("RandevuID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RandevuID"));
-
-                    b.Property<int>("CalisanID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Durum")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("HizmetID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MusteriAdi")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Notlar")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RandevuTarihi")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Ucret")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("RandevuID");
-
-                    b.HasIndex("CalisanID");
-
-                    b.HasIndex("HizmetID");
-
-                    b.ToTable("Randevular");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -391,6 +421,25 @@ namespace WebProjesi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Randevu", b =>
+                {
+                    b.HasOne("WebProjesi.Models.Calisan", "Calisan")
+                        .WithMany()
+                        .HasForeignKey("CalisanID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebProjesi.Models.Hizmet", "Hizmet")
+                        .WithMany()
+                        .HasForeignKey("HizmetID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Calisan");
+
+                    b.Navigation("Hizmet");
+                });
+
             modelBuilder.Entity("WebProjesi.Models.CalisanHizmet", b =>
                 {
                     b.HasOne("WebProjesi.Models.Calisan", "Calisan")
@@ -410,23 +459,15 @@ namespace WebProjesi.Migrations
                     b.Navigation("Hizmet");
                 });
 
-            modelBuilder.Entity("WebProjesi.Models.Randevu", b =>
+            modelBuilder.Entity("WebProjesi.Models.Hizmet", b =>
                 {
-                    b.HasOne("WebProjesi.Models.Calisan", "Calisan")
-                        .WithMany()
-                        .HasForeignKey("CalisanID")
+                    b.HasOne("WebProjesi.Models.Kategori", "Kategori")
+                        .WithMany("Hizmetler")
+                        .HasForeignKey("KategoriID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebProjesi.Models.Hizmet", "Hizmet")
-                        .WithMany()
-                        .HasForeignKey("HizmetID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Calisan");
-
-                    b.Navigation("Hizmet");
+                    b.Navigation("Kategori");
                 });
 
             modelBuilder.Entity("WebProjesi.Models.Calisan", b =>
@@ -437,6 +478,11 @@ namespace WebProjesi.Migrations
             modelBuilder.Entity("WebProjesi.Models.Hizmet", b =>
                 {
                     b.Navigation("CalisanHizmetler");
+                });
+
+            modelBuilder.Entity("WebProjesi.Models.Kategori", b =>
+                {
+                    b.Navigation("Hizmetler");
                 });
 #pragma warning restore 612, 618
         }
