@@ -1,59 +1,50 @@
-using Microsoft.AspNetCore.Mvc;
-using WebProjesi.Data;
-using WebProjesi.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebProjesi.Data;
+using WebProjesi.Data.Services;
+using WebProjesi.Models;
 
 namespace WebProjesi.Controllers
 {
     public class HizmetController : Controller
     {
+        private readonly IHizmetServices _service;
 
-        private readonly AppDbContext _context;
-
-        public HizmetController(AppDbContext context)
+        public HizmetController(IHizmetServices service)
         {
-            _context = context;
+            _service = service;
         }
 
+        // GET: Hizmet
         public IActionResult Index()
         {
-            IEnumerable<Hizmet> hizmetler = _context.Hizmetler.ToList();
+            var hizmetler = _service.GetAll();
             return View(hizmetler);
         }
 
-        //Get
-        public IActionResult YeniHizmetEkle()
+        // GET: Hizmet/Ekle
+        public IActionResult Ekle()
         {
             return View();
         }
 
-        //Post
+        // POST: Hizmet/Ekle
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult YeniHizmetEkle(Hizmet hizmet)
+        public IActionResult Ekle(Hizmet hizmet)
         {
             if (ModelState.IsValid)
             {
-                _context.Hizmetler.Add(hizmet);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                _service.YeniHizmetEkle(hizmet);
+                return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                return View(hizmet);
-            }
+            return View(hizmet);
         }
 
-        //GET
-        public IActionResult Duzeltir(int? Id)
+        // GET: Hizmet/Guncelle/5
+        public IActionResult Guncelle(int id)
         {
-            if (Id == 0 || Id == null)
-            {
-                return NotFound();
-            }
-
-            var hizmet = _context.Hizmetler.Find(Id);
-
+            var hizmet = _service.GetById(id);
             if (hizmet == null)
             {
                 return NotFound();
@@ -61,32 +52,23 @@ namespace WebProjesi.Controllers
             return View(hizmet);
         }
 
-        // POST
+        // POST: Hizmet/Guncelle/5
         [HttpPost]
-        public IActionResult Duzeltir(Hizmet hizmet)
+        [ValidateAntiForgeryToken]
+        public IActionResult Guncelle(int id, Hizmet hizmet)
         {
             if (ModelState.IsValid)
             {
-                _context.Update(hizmet);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                _service.HizmetGuncelle(id, hizmet);
+                return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                return View(hizmet);
-            }
+            return View(hizmet);
         }
 
-        //GET
-        public IActionResult Sil(int? Id)
+        // GET: Hizmet/Sil/5
+        public IActionResult Sil(int id)
         {
-            if (Id == null || Id == 0)
-            {
-                return NotFound();
-            }
-
-            var hizmet = _context.Hizmetler.Find(Id);
-
+            var hizmet = _service.GetById(id);
             if (hizmet == null)
             {
                 return NotFound();
@@ -94,23 +76,13 @@ namespace WebProjesi.Controllers
             return View(hizmet);
         }
 
-        //Post
-        [HttpPost]
+        // POST: Hizmet/Sil/5
+        [HttpPost, ActionName("Sil")]
         [ValidateAntiForgeryToken]
-        public IActionResult Sil(int Id)
+        public IActionResult SilOnay(int id)
         {
-            var hizmet = _context.Hizmetler.Find(Id);
-
-            if (hizmet == null)
-            {
-                return NotFound();
-            }
-
-            _context.Hizmetler.Remove(hizmet);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
+            _service.HizmetSil(id);
+            return RedirectToAction(nameof(Index));
         }
-
-
     }
 }
