@@ -1,12 +1,9 @@
-﻿namespace Barber_Shop.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace WebProjesi.Models
 {
-    public class Kullanici
+    public class Kullanici : IdentityUser 
     {
-        public int KullaniciId { get; set; }
-        public string Ad { get; set; } = string.Empty; 
-        public string Eposta { get; set; } = string.Empty; 
-        public string Sifre { get; set; } = string.Empty; 
-        public string Rol { get; set; } = "Kullanici"; 
-        public ICollection<Randevu>? Randevular { get; set; }
+        public string Ad { get; set; }
     }
 }

@@ -1,16 +1,31 @@
-public class Randevu
+﻿using System.ComponentModel.DataAnnotations;
+using WebProjesi.Models;
+
+namespace WebProjesi.Models
 {
-    public int RandevuId { get; set; } // PK
-    public DateTime Tarih { get; set; }
-    public string Saat { get; set; }
 
-    public int HizmetId { get; set; } // FK
-    public Hizmet Hizmet { get; set; }
+    public class Randevu
+    {
+        public int RandevuID { get; set; }
+        public int CalisanID { get; set; }
+        public Calisan Calisan { get; set; }
 
-    public int CalisanId { get; set; } // FK
-    public Calisan Calisan { get; set; }
+        public int HizmetID { get; set; }
 
-    public int KullaniciId { get; set; } // FK
-    public Kullanici Kullanici { get; set; }
+        public Hizmet Hizmet { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string MusteriAdi { get; set; }
+
+        [Required]
+        public DateTime RandevuTarihi { get; set; }
+
+        [StringLength(50)]
+        public string Durum { get; set; } = "Beklemede";
+
+        public string Notlar { get; set; }
+
+        public decimal Ucret { get; set; }
+    }
 }
-

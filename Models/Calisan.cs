@@ -1,28 +1,31 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebProjesi.Models
 {
     public class Calisan
     {
-        [Key]
-        public int CalisanId { get; set; }
+        
+        public int CalisanID { get; set; }
 
-        [Required]
+
+
+        [Required(ErrorMessage = "Adi ve Soyadi giriniz")]
         [StringLength(30)]
-        public string Ad { get; set; }
+        public string Ad_Soyad { get; set; }
 
+       
 
-        [Required]
-        [StringLength(30)]
-        public string Soyad { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Baslangic Saati giriniz")]
+        [DataType(DataType.Time)]
         public TimeSpan BaslangicSaati { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Bitis Saati giriniz")]
+        [DataType(DataType.Time)]
         public TimeSpan BitisSaati { get; set; }
+        [Required(ErrorMessage = "Calisan Resmini giriniz")]
+        public string Calisan_Resmi { get; set; }
 
-        public ICollection<Calisan_Hizmet> Calisan_Hizmetler { get; set; }
+        public List<CalisanHizmet> CalisanHizmetler { get; set; } = new List<CalisanHizmet>();
+
     }
-
- } 
+} 
