@@ -20,8 +20,8 @@ namespace WebProjesi.Data
             }
 
             // Create Admin user
-            var adminEmail = "admin@barber.com";
-            var adminPassword = "Admin@123";
+            var adminEmail = "muhammed.elzabi@ogr.sakarya.edu.tr";
+            var adminPassword = "sau";
 
             if (await userManager.FindByEmailAsync(adminEmail) == null)
             {

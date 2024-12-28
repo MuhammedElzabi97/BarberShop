@@ -23,9 +23,10 @@ namespace WebProjesi.Models
         [DataType(DataType.Time)]
         public TimeSpan BitisSaati { get; set; }
         [Required(ErrorMessage = "Calisan Resmini giriniz")]
-        public string Calisan_Resmi { get; set; }
+        public string? Calisan_Resmi { get; set; }
 
         public List<CalisanHizmet> CalisanHizmetler { get; set; } = new List<CalisanHizmet>();
+        public List<Randevu> Randevular { get; set; } = new List<Randevu>();
 
     }
 } 
