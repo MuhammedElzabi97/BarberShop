@@ -1,0 +1,103 @@
+﻿@model WebProjesi.Models.Calisan
+@{
+    Layout = "~/Views/Shared/_CalisanLayout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Çalışan Güncelle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <!-- Header Section -->
+                <div class="card-header bg-gradient-primary text-white text-center py-3">
+                    <h3><i class="bi bi-pencil-square"></i> Çalışan Güncelle</h3>
+                </div>
+                <form asp-action="Guncelle" method="post" class="card-body">
+                    <!-- Hidden Input for ID -->
+                    <input type="hidden" asp-for="CalisanID" />
+
+                    <!-- Çalışan Ad Soyad -->
+                    <div class="mb-4">
+                        <label for="AdSoyad" class="form-label fw-bold">Ad Soyad</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" asp-for="Ad_Soyad" class="form-control" placeholder="Ad Soyad Giriniz" />
+                        </div>
+                        <span asp-validation-for="Ad_Soyad" class="text-danger"></span>
+                    </div>
+
+                    <!-- Başlangıç Saati -->
+                    <div class="mb-4">
+                        <label for="BaslangicSaati" class="form-label fw-bold">Başlangıç Saati</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
+                            <input type="time" asp-for="BaslangicSaati" class="form-control" />
+                        </div>
+                        <span asp-validation-for="BaslangicSaati" class="text-danger"></span>
+                    </div>
+
+                    <!-- Bitiş Saati -->
+                    <div class="mb-4">
+                        <label for="BitisSaati" class="form-label fw-bold">Bitiş Saati</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
+                            <input type="time" asp-for="BitisSaati" class="form-control" />
+                        </div>
+                        <span asp-validation-for="BitisSaati" class="text-danger"></span>
+                    </div>
+
+                    <!-- Çalışan Resmi -->
+                    <div class="mb-4">
+                        <label for="Calisan_Resmi" class="form-label fw-bold">Çalışan Resmi (URL)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-image"></i></span>
+                            <input type="text" asp-for="Calisan_Resmi" class="form-control" placeholder="Resim URL'sini Giriniz" />
+                        </div>
+                        <span asp-validation-for="Calisan_Resmi" class="text-danger"></span>
+                    </div>
+
+                    <!-- Hizmetler (Checkboxes) -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Hizmetler</label>
+                        <div class="row">
+                            @if (ViewBag.Hizmetler != null && ViewBag.Hizmetler.Count > 0)
+                            {
+                                foreach (var hizmet in ViewBag.Hizmetler)
+                                {
+                                    var isChecked = Model.CalisanHizmetler != null && Model.CalisanHizmetler.Any(ch => ch.HizmetID == hizmet.HizmetID) ? "checked" : "";
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" name="HizmetlerIds" value="@hizmet.HizmetID" id="hizmet-@hizmet.HizmetID" @isChecked />
+                                            <label class="form-check-label" for="hizmet-@hizmet.HizmetID">@hizmet.HizmetAdi</label>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-danger">Hizmet Bulunamadı</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Submit and Back Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Geri Dön
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

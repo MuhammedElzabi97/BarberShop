@@ -1,0 +1,42 @@
+﻿@model WebProjesi.Models.Calisan
+@{
+    Layout = "~/Views/Shared/_CalisanLayout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Çalışan Sil";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-danger text-white">
+            <h3 class="text-center"><i class="bi bi-exclamation-triangle"></i> Çalışan Sil</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-center">Bu çalışanı silmek istediğinizden emin misiniz?</p>
+            <div class="mb-3">
+                <h5 class="text-center text-danger fw-bold">@Model.Ad_Soyad</h5>
+            </div>
+            <dl class="row">
+                <dt class="col-sm-4 text-end">Ad Soyad:</dt>
+                <dd class="col-sm-8">@Model.Ad_Soyad</dd>
+
+                <dt class="col-sm-4 text-end">Başlangıç Saati:</dt>
+                <dd class="col-sm-8">@Model.BaslangicSaati.ToString("hh\\:mm")</dd>
+                <dt class="col-sm-4 text-end">Bitiş Saati:</dt>
+                <dd class="col-sm-8">@Model.BitisSaati.ToString("hh\\:mm")</dd>
+            </dl>
+        </div>
+        <div class="card-footer text-end">
+            <form asp-action="Sil" method="post" class="d-inline">
+                <input type="hidden" asp-for="CalisanID" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Sil
+                </button>
+            </form>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Geri Dön
+            </a>
+        </div>
+    </div>
+</div>
