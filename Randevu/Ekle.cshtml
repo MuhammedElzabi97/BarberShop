@@ -1,0 +1,80 @@
+﻿@model WebProjesi.Models.Randevu
+
+@{
+    ViewData["Title"] = "Yeni Randevu Ekle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Yeni Randevu Ekle</h3>
+                </div>
+                <form asp-action="Ekle" method="post" class="card-body">
+                    <!-- Müşteri Adı -->
+                    <div class="mb-4">
+                        <label for="MusteriAdi" class="form-label fw-bold">Müşteri Adı</label>
+                        <input type="text" asp-for="MusteriAdi" class="form-control" placeholder="Müşteri Adı Giriniz" />
+                        <span asp-validation-for="MusteriAdi" class="text-danger"></span>
+                    </div>
+                    <!-- Çalışan Dropdown -->
+                    <select asp-for="CalisanID" class="form-select">
+                        <option value="">Çalışan Seçiniz</option>
+                        @if (ViewBag.Calisanlar != null)
+                        {
+                            foreach (var calisan in ViewBag.Calisanlar)
+                            {
+                                <option value="@calisan.CalisanID">@calisan.Ad_Soyad</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="">Çalışanlar yüklenemedi</option>
+                        }
+                    </select>
+
+                    <!-- Hizmet Dropdown -->
+                    <select asp-for="HizmetID" class="form-select">
+                        <option value="">Hizmet Seçiniz</option>
+                        @if (ViewBag.Hizmetler != null)
+                        {
+                            foreach (var hizmet in ViewBag.Hizmetler)
+                            {
+                                <option value="@hizmet.HizmetID">@hizmet.HizmetAdi</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="">Hizmetler yüklenemedi</option>
+                        }
+                    </select>
+
+
+
+                    <!-- Randevu Tarihi -->
+                    <div class="mb-4">
+                        <label for="RandevuTarihi" class="form-label fw-bold">Randevu Tarihi</label>
+                        <input type="datetime-local" asp-for="RandevuTarihi" class="form-control" />
+                        <span asp-validation-for="RandevuTarihi" class="text-danger"></span>
+                    </div>
+
+                    <!-- Notlar -->
+                    <div class="mb-4">
+                        <label for="Notlar" class="form-label fw-bold">Notlar</label>
+                        <textarea asp-for="Notlar" class="form-control" placeholder="Ek Notlar"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Geri Dön
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

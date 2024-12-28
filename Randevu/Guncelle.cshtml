@@ -1,0 +1,32 @@
+﻿@model WebProjesi.Models.Randevu
+
+@{
+    ViewData["Title"] = "Randevu Güncelle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Randevu Güncelle</h3>
+                </div>
+                <form asp-action="Guncelle" method="post" class="card-body">
+                    <input type="hidden" asp-for="RandevuID" />
+
+                    <!-- Reuse Ekle view fields here -->
+                    @Html.Partial("_RandevuFormPartial")
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Geri Dön
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Güncelle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
