@@ -1,0 +1,79 @@
+﻿@model WebProjesi.Models.Hizmet
+
+@{
+    ViewData["Title"] = "Hizmet Güncelle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-warning text-white text-center">
+                    <h3>Hizmet Güncelle</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Guncelle" method="post">
+                        <input type="hidden" asp-for="HizmetID" />
+
+                        <!-- Hizmet Adi -->
+                        <div class="mb-4">
+                            <label for="HizmetAdi" class="form-label">Hizmet Adı</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-scissors"></i></span>
+                                <input asp-for="HizmetAdi" class="form-control" placeholder="Hizmet Adı Giriniz" />
+                            </div>
+                            <span asp-validation-for="HizmetAdi" class="text-danger"></span>
+                        </div>
+
+                        <!-- Aciklama -->
+                        <div class="mb-4">
+                            <label for="Aciklama" class="form-label">Açıklama</label>
+                            <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Hizmet Açıklaması Giriniz"></textarea>
+                            <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        </div>
+
+                        <!-- Süre -->
+                        <div class="mb-4">
+                            <label for="Sure" class="form-label">Süre (dakika)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
+                                <input asp-for="Sure" class="form-control" placeholder="Hizmet Süresi Giriniz" />
+                            </div>
+                            <span asp-validation-for="Sure" class="text-danger"></span>
+                        </div>
+
+                        <!-- Ücret -->
+                        <div class="mb-4">
+                            <label for="Ucret" class="form-label">Ücret (TL)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-currency-exchange"></i></span>
+                                <input asp-for="Ucret" class="form-control" placeholder="Hizmet Ücreti Giriniz" />
+                            </div>
+                            <span asp-validation-for="Ucret" class="text-danger"></span>
+                        </div>
+
+                        <!-- ImageURL -->
+                        <div class="mb-4">
+                            <label for="ImageURL" class="form-label">Hizmet Resmi (URL)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-image"></i></span>
+                                <input asp-for="ImageURL" class="form-control" placeholder="Resim URL'sini Giriniz" />
+                            </div>
+                            <span asp-validation-for="ImageURL" class="text-danger"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Geri Dön
+                            </a>
+                            <button type="submit" class="btn btn-warning text-white">
+                                <i class="bi bi-save"></i> Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

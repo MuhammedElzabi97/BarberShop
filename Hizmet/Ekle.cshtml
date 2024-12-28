@@ -1,0 +1,75 @@
+﻿@model WebProjesi.Models.Hizmet
+
+@{
+    ViewData["Title"] = "Yeni Hizmet Ekle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center">
+                    <h3>Yeni Hizmet Ekle</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Ekle" method="post">
+                        <!-- Hizmet Adı -->
+                        <div class="mb-4">
+                            <label for="HizmetAdi" class="form-label">Hizmet Adı</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-scissors"></i></span>
+                                <input asp-for="HizmetAdi" class="form-control" placeholder="Hizmet Adı Giriniz" />
+                            </div>
+                            <span asp-validation-for="HizmetAdi" class="text-danger"></span>
+                        </div>
+
+                        <!-- Açıklama -->
+                        <div class="mb-4">
+                            <label for="Aciklama" class="form-label">Açıklama</label>
+                            <textarea asp-for="Aciklama" class="form-control" placeholder="Hizmet Açıklaması Giriniz"></textarea>
+                            <span asp-validation-for="Aciklama" class="text-danger"></span>
+                        </div>
+
+                        <!-- Süre -->
+                        <div class="mb-4">
+                            <label for="Sure" class="form-label">Süre (dakika)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-clock"></i></span>
+                                <input asp-for="Sure" class="form-control" placeholder="Hizmet Süresini Giriniz" />
+                            </div>
+                            <span asp-validation-for="Sure" class="text-danger"></span>
+                        </div>
+
+                        <!-- Ücret -->
+                        <div class="mb-4">
+                            <label for="Ucret" class="form-label">Ücret (TL)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-cash"></i></span>
+                                <input asp-for="Ucret" class="form-control" placeholder="Hizmet Ücretini Giriniz" />
+                            </div>
+                            <span asp-validation-for="Ucret" class="text-danger"></span>
+                        </div>
+
+                        <!-- Resim URL -->
+                        <div class="mb-4">
+                            <label for="ImageURL" class="form-label">Resim URL</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-image"></i></span>
+                                <input asp-for="ImageURL" class="form-control" placeholder="Resim URL'si Giriniz" />
+                            </div>
+                            <span asp-validation-for="ImageURL" class="text-danger"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Kaydet
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Geri Dön
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

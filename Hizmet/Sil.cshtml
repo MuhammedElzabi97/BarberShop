@@ -1,0 +1,32 @@
+﻿@model WebProjesi.Models.Hizmet
+
+@{
+    ViewData["Title"] = "Hizmet Sil";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white text-center">
+                    <h3><i class="bi bi-exclamation-triangle"></i> Hizmet Sil</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-center text-danger">Bu hizmeti silmek istediğinizden emin misiniz?</p>
+                    <h5 class="text-center text-primary fw-bold">@Model.HizmetAdi</h5>
+                </div>
+                <div class="card-footer text-end">
+                    <form asp-action="Sil" method="post" class="d-inline">
+                        <input type="hidden" asp-for="HizmetID" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Sil
+                        </button>
+                    </form>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Geri Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
