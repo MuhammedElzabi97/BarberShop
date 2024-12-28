@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProjesi.Data;
 using WebProjesi.Data.Services;
@@ -6,6 +7,8 @@ using WebProjesi.Models;
 
 namespace WebProjesi.Controllers
 {
+    [Authorize(Roles = "Admin")]
+
     public class CalisanController : Controller
     {
         private readonly ICalisanServices _service;
@@ -15,55 +18,72 @@ namespace WebProjesi.Controllers
             _service = service;
         }
 
-        public  IActionResult Index()
+        public IActionResult Index()
         {
-            var data =  _service.GetAll();
+            return View();
+        }
+        
+        public IActionResult Calisanlar()
+        {
+            var data = _service.GetAll();
             return View(data);
         }
 
         // GET: Calisan/Ekle
         public IActionResult Ekle()
         {
-            ViewBag.Hizmetler = _service.GetAll();
+            ViewBag.Hizmetler = _service.GetAllHizmetler();
             return View();
         }
 
-
+        // POST: Calisan/Ekle
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Ekle(Calisan yeniCalisan)
+        public IActionResult Ekle(Calisan yeniCalisan, List<int> HizmetlerIds)
         {
             if (ModelState.IsValid)
             {
-                _service.YeniCalisanEkle( yeniCalisan);
+                // Save the new Calisan
+                _service.YeniCalisanEkle(yeniCalisan);
+
+                // Associate the selected Hizmetler with the Calisan
+                foreach (var hizmetId in HizmetlerIds)
+                {
+                    var calisanHizmet = new CalisanHizmet
+                    {
+                        CalisanID = yeniCalisan.CalisanID,
+                        HizmetID = hizmetId
+                    };
+                    _service.AddCalisanHizmet(calisanHizmet);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.Hizmetler = _service.GetAllHizmetler();
             return View(yeniCalisan);
         }
+
 
         // GET: Calisan/Guncelle/5
         public IActionResult Guncelle(int id)
         {
-            if (id == null)
-            {
-                return View("NotFound");
-            }
-
             var calisan = _service.GetById(id);
-
             if (calisan == null)
             {
                 return NotFound();
             }
+
+            ViewBag.Hizmetler = _service.GetAllHizmetler(); // Pass all available Hizmetler
             return View(calisan);
         }
 
-                 
-     
-        // POST: Calisan/Guncelle/5
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Guncelle(int id, Calisan guncelCalisan)
+        public IActionResult Guncelle(int id, Calisan guncelCalisan, List<int> HizmetlerIds)
         {
             if (id != guncelCalisan.CalisanID)
             {
@@ -72,25 +92,18 @@ namespace WebProjesi.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _service.CalisanGuncelle(guncelCalisan.CalisanID, guncelCalisan);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_service.GetAll().Any(c => c.CalisanID == guncelCalisan.CalisanID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _service.CalisanGuncelle(id, guncelCalisan);
+
+                // Update Hizmetler associations
+                _service.UpdateCalisanHizmetler(id, HizmetlerIds);
+
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.Hizmetler = _service.GetAllHizmetler(); // Reload Hizmetler for validation errors
             return View(guncelCalisan);
         }
+
 
         // GET: Calisan/Sil/5
         public IActionResult Sil(int id)

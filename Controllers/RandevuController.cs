@@ -1,191 +1,129 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WebProjesi.Data.Services;
 using WebProjesi.Models;
 
 namespace WebProjesi.Controllers
 {
+  //  [Authorize(Roles = "Kullanici")]
     public class RandevuController : Controller
     {
-        private readonly IRandevuServices _service;
+        private readonly IRandevuServices _randevuService;
         private readonly ICalisanServices _calisanService;
         private readonly IHizmetServices _hizmetService;
-        public RandevuController(IRandevuServices service, ICalisanServices calisanService, IHizmetServices hizmetService)
+
+        public RandevuController(IRandevuServices randevuService, ICalisanServices calisanService, IHizmetServices hizmetService)
         {
-            _service = service;
+            _randevuService = randevuService;
             _calisanService = calisanService;
             _hizmetService = hizmetService;
         }
 
-        // GET: Randevu/Index
+        // قائمة جميع المواعيد
         public IActionResult Index()
         {
-            var randevular = _service.GetAll();
+            var randevular = _randevuService.GetAll();
             return View(randevular);
         }
 
-        // GET: Randevu/Ekle
+        // قائمة مواعيد المستخدم الحالي
+        public IActionResult Randevularim()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var appointments = _randevuService.GetAllRandevular()
+                .Where(r => r.UserID == userId); // Filter by logged-in user's ID
+
+            return View(appointments);
+        }
+
+        // صفحة حجز موعد جديد
         public IActionResult Ekle()
         {
-            // اختيار التاريخ (اختياري - يمكن تغييره بناءً على المدخلات)
-            var today = DateTime.Now.Date;
-
-            // الحصول على العمال المحجوزين في هذا اليوم
-            var reservedCalisanIds = _service.GetAllRandevular()
-                .Where(r => r.RandevuTarihi.Date == today)
-                .Select(r => r.CalisanID)
-                .ToList();
-
-            // جلب جميع العمال مع استبعاد المحجوزين
-            ViewBag.Calisanlar = _calisanService.GetAll()
-                .Where(c => !reservedCalisanIds.Contains(c.CalisanID))
-                .ToList();
-
-            // جلب جميع الخدمات
-            ViewBag.Hizmetler = _hizmetService.GetAll();
-
-            return View();
-        }
-
-
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Ekle(Randevu randevu)
-        {
-            if (ModelState.IsValid)
-            {
-                _service.YeniRandevuEkle(randevu);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(randevu);
-        }
-        /*
-         
-        // GET: Randevu/Detay/5
-        public IActionResult Detay(int id)
-        {
-            var randevu = _service.GetById(id);
-            if (randevu == null)
-            {
-                return NotFound();
-            }
-            return View(randevu);
-        }
-
-        // GET: Randevu/Ekle
-        public IActionResult Ekle()
-        {
+            ViewBag.Calisanlar = _calisanService.GetAll(); // Get all employees
+            ViewBag.Hizmetler = _hizmetService.GetAll();   // Get all services
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Ekle(Randevu randevu)
         {
-            // التحقق من صحة البيانات
-            if (ModelState.IsValid)
+            var calisan = _calisanService.GetById(randevu.CalisanID);
+            var hizmet = _hizmetService.GetById(randevu.HizmetID);
+
+            if (calisan == null || hizmet == null)
             {
-                // التحقق من صحة الموظف
-                var calisan = _context.Calisanlar.FirstOrDefault(c => c.CalisanID == randevu.CalisanID);
-                if (calisan == null)
-                {
-                    ModelState.AddModelError("CalisanID", "Geçerli bir çalışan seçiniz.");
-                    return View(randevu);
-                }
-
-                // التحقق من صحة الخدمة
-                var hizmet = _context.Hizmetler.FirstOrDefault(h => h.HizmetID == randevu.HizmetID);
-                if (hizmet == null)
-                {
-                    ModelState.AddModelError("HizmetID", "Geçerli bir hizmet seçiniz.");
-                    return View(randevu);
-                }
-
-                // التحقق من التاريخ
-                if (randevu.RandevuTarihi < DateTime.Now)
-                {
-                    ModelState.AddModelError("RandevuTarihi", "Geçmiş bir tarih seçilemez.");
-                    return View(randevu);
-                }
-
-                // إذا كانت جميع البيانات صحيحة، أضف الموعد
-                _service.YeniRandevuEkle(randevu);
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("", "Geçersiz Çalışan veya Hizmet seçildi.");
+                ViewBag.Calisanlar = _calisanService.GetAll();
+                ViewBag.Hizmetler = _hizmetService.GetAll();
+                return View(randevu);
             }
 
-            // إذا كانت هناك أخطاء في البيانات، عرض النموذج مع الأخطاء
-            return View(randevu);
+            if (randevu.RandevuTarihi < DateTime.Now)
+            {
+                ModelState.AddModelError("RandevuTarihi", "Geçmiş bir tarih seçilemez.");
+                ViewBag.Calisanlar = _calisanService.GetAll();
+                ViewBag.Hizmetler = _hizmetService.GetAll();
+                return View(randevu);
+            }
+
+            // تعيين UserID للمستخدم الحالي
+            randevu.UserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // إضافة الموعد
+            _randevuService.YeniRandevuEkle(randevu);
+
+            TempData["SuccessMessage"] = "Randevu başarıyla alındı!";
+            return RedirectToAction("Randevularim");
         }
 
-        // GET: Randevu/Guncelle/5
-        public IActionResult Guncelle(int id)
+        // حذف موعد
+        public IActionResult Sil(int? id)
         {
-            var randevu = _service.GetById(id);
-            if (randevu == null)
-            {
+            if (id == null)
                 return NotFound();
-            }
+
+            var randevu = _randevuService.GetById(id.Value);
+            if (randevu == null)
+                return NotFound();
+
             return View(randevu);
         }
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Guncelle(Randevu randevu)
-        {
-            // التحقق من صحة البيانات
-            if (ModelState.IsValid)
-            {
-                // التحقق من صحة الموظف
-                var calisan = _context.Calisanlar.FirstOrDefault(c => c.CalisanID == randevu.CalisanID);
-                if (calisan == null)
-                {
-                    ModelState.AddModelError("CalisanID", "Geçerli bir çalışan seçiniz.");
-                    return View(randevu);
-                }
-
-                // التحقق من صحة الخدمة
-                var hizmet = _context.Hizmetler.FirstOrDefault(h => h.HizmetID == randevu.HizmetID);
-                if (hizmet == null)
-                {
-                    ModelState.AddModelError("HizmetID", "Geçerli bir hizmet seçiniz.");
-                    return View(randevu);
-                }
-
-                // التحقق من التاريخ
-                if (randevu.RandevuTarihi < DateTime.Now)
-                {
-                    ModelState.AddModelError("RandevuTarihi", "Geçmiş bir tarih seçilemez.");
-                    return View(randevu);
-                }
-
-                // إذا كانت جميع البيانات صحيحة، قم بالتحديث
-                _service.RandevuGuncelle(randevu);
-                return RedirectToAction(nameof(Index));
-            }
-
-            // إذا كانت هناك أخطاء في البيانات، عرض النموذج مع الأخطاء
-            return View(randevu);
-        }
-
-        // GET: Randevu/Sil/5
         public IActionResult Sil(int id)
         {
-            var randevu = _service.GetById(id);
-            if (randevu == null)
+            var randevu = _randevuService.GetById(id); 
+            if (randevu != null)
             {
-                return NotFound();
+                _randevuService.RandevuSil(id); 
             }
-            return View(randevu);
+
+            TempData["SuccessMessage"] = "Randevu başarıyla iptal edildi.";
+            return RedirectToAction("Index");
         }
 
-        // POST: Randevu/Sil/5
-        [HttpPost, ActionName("Sil")]
-        [ValidateAntiForgeryToken]
-        public IActionResult SilOnay(int id)
+        [HttpGet]
+        public IActionResult GetHizmetlerForCalisan(int calisanId)
         {
-            _service.RandevuSil(id);
-            return RedirectToAction(nameof(Index));
+            var hizmetler = _calisanService.GetHizmetlerByCalisan(calisanId);
+            return Json(hizmetler.Select(h => new { h.HizmetID, h.HizmetAdi }));
         }
-        */
+
+        [HttpGet]
+        public IActionResult GetAvailableTimes(int calisanId, int hizmetId, DateTime date)
+        {
+            var hizmet = _hizmetService.GetById(hizmetId);
+            var appointments = _randevuService.GetAllRandevular()
+                .Where(r => r.CalisanID == calisanId && r.RandevuTarihi.Date == date.Date);
+
+            var availableSlots = _calisanService.GetAvailableTimeSlots(calisanId, date, appointments, hizmet.Sure);
+
+            return Json(availableSlots);
+        }
+
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProjesi.Data;
 using WebProjesi.Data.Services;
@@ -6,6 +7,7 @@ using WebProjesi.Models;
 
 namespace WebProjesi.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class HizmetController : Controller
     {
         private readonly IHizmetServices _service;
